@@ -1,3 +1,4 @@
+import logging
 from redis import StrictRedis
 
 
@@ -27,20 +28,21 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     """开发环境"""
-    pass
+    LOG_LEVEL = logging.DEBUG
 
 
 class ProductionConfig(Config):
     """生产环境"""
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = "mysql://root:gphmysql@127.0.0.1:3306/information_pro"
-
+    LOG_LEVEL = logging.ERROR
 
 class UnittestConfig(Config):
     """测试环境"""
     TESTING = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = "mysql://root:gphmysql@127.0.0.1:3306/information_case"
+    LOG_LEVEL = logging.DEBUG
 
 # 定义字典,存储关键字对应的不同配置类的类名
 configs = {

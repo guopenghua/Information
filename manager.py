@@ -3,7 +3,7 @@ from flask_migrate import Migrate, MigrateCommand
 from info import create_app, db
 
 # 创建app
-app = create_app("dev")
+app = create_app("unit")
 
 # 创建脚本管理器对象
 manager = Manager(app)
