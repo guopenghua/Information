@@ -1,7 +1,9 @@
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from info import app
+from info import create_app
 
+# 创建app
+app = create_app("dev")
 
 # 创建脚本管理器对象
 manager = Manager(app)
