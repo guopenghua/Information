@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
 from flask_wtf.csrf import CSRFProtect
-
+from flask_session import Session
 
 class Config(object):
     """配置文件的加载"""
@@ -19,6 +19,15 @@ class Config(object):
     REDIS_HOST = "127.0.0.1"
     REDIS_PORT = 6379
 
+    SECRET_KEY = "qwert"
+
+    # flask_session的配置信息
+    SESSION_TYPE = "redis"  # 指定 session 保存到 redis 中
+    SESSION_USE_SIGNER = True  # 让 cookie 中的 session_id 被加密签名处理
+    SESSION_REDIS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # 使用 redis 的实例
+    PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期，单位是秒
+
+
 app = Flask(__name__)
 
 # 获取配置信息
@@ -33,10 +42,16 @@ redis_store = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 # 开启CSRF保护
 CSRFProtect(app)
 
+# 指定session数据存储在后端的位置
+Session(app)
+
+
 @app.route('/')
 def index():
 
-
+    # 测试session
+    from flask import session
+    session["age"] = 2
 
     return "index"
 
