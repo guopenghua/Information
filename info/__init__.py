@@ -8,9 +8,9 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 
-def setup_log(config_name):
+def setup_log(level):
     # 设置日志的记录等级
-    logging.basicConfig(level=configs[config_name].LOG_LEVEL)  # 调试debug级
+    logging.basicConfig(level=level)  # 调试debug级
     # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小、保存的日志文件个数上限
     file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
     # 创建日志记录的格式 日志等级 输入日志信息的文件名 行数 日志信息
@@ -27,6 +27,9 @@ db = SQLAlchemy()
 
 def create_app(config_name):
     """创建app的工厂方法, 根据参数选择不同的配置类"""
+
+    # 根据创建app时的配置环境,加载日志等级
+    setup_log(configs[config_name].LOG_LEVEL)
 
     app = Flask(__name__)
 
@@ -45,5 +48,7 @@ def create_app(config_name):
 
     # 指定session数据存储在后端的位置
     Session(app)
+
+
 
     return app
