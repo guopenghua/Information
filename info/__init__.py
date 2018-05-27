@@ -5,6 +5,9 @@ from flask_wtf.csrf import CSRFProtect
 from flask_session import Session
 from config import configs
 
+# 创建连接到数据库的对象
+db = SQLAlchemy()
+
 
 def create_app(config_name):
     """创建app的工厂方法, 根据参数选择不同的配置类"""
@@ -15,7 +18,8 @@ def create_app(config_name):
     app.config.from_object(configs[config_name])
 
     # 创建连接到数据库的对象
-    db = SQLAlchemy(app)
+    # db = SQLAlchemy(app)
+    db.init_app(app)
 
     # 创建连接到redis数据库的对象
     redis_store = StrictRedis(host=configs[config_name].REDIS_HOST, port=configs[config_name].REDIS_PORT)
