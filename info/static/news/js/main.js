@@ -156,13 +156,17 @@ $(function(){
         // 发起注册请求
 
     })
-})
+});
 
-var imageCodeId = ""
+var imageCodeId = "";
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 function generateImageCode() {
-
+    // 生成图片验证码的编号
+    imageCodeId = generateUUID();
+    var imageCodeUrl = "/passport/image_code?imageCodeId=" + imageCodeId;
+    // 设置页面中图片验证码img标签的src属性
+    $(".get_pic_code").attr("src", imageCodeUrl)
 }
 
 // 发送短信验证码

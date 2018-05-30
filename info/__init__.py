@@ -24,6 +24,7 @@ def setup_log(level):
 # 创建连接到数据库的对象
 db = SQLAlchemy()
 
+redis_store = None
 
 def create_app(config_name):
     """创建app的工厂方法, 根据参数选择不同的配置类"""
@@ -41,6 +42,7 @@ def create_app(config_name):
     db.init_app(app)
 
     # 创建连接到redis数据库的对象
+    global redis_store
     redis_store = StrictRedis(host=configs[config_name].REDIS_HOST, port=configs[config_name].REDIS_PORT)
 
     # 开启CSRF保护
@@ -52,5 +54,8 @@ def create_app(config_name):
     # 注册蓝图
     from info.modules.index import index_blue
     app.register_blueprint(index_blue)
+
+    from info.modules.passport import passport_blue
+    app.register_blueprint(passport_blue)
 
     return app
