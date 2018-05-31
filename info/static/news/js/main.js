@@ -120,18 +120,18 @@ $(function(){
         }
 
         // 发起登录请求
-    })
+    });
 
 
     // TODO 注册按钮点击
     $(".register_form_con").submit(function (e) {
         // 阻止默认提交操作
-        e.preventDefault()
+        e.preventDefault();
 
 		// 取到用户输入的内容
-        var mobile = $("#register_mobile").val()
-        var smscode = $("#smscode").val()
-        var password = $("#register_password").val()
+        var mobile = $("#register_mobile").val();
+        var smscode = $("#smscode").val();
+        var password = $("#register_password").val();
 
 		if (!mobile) {
             $("#register-mobile-err").show();
@@ -154,7 +154,24 @@ $(function(){
         }
 
         // 发起注册请求
-
+        var data = {
+            "mobile": mobile,
+            "smscode": smscode,
+            "password": password
+        };
+        $.ajax({
+            url: "/passport/register",
+            type: "post",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            success: function (response) {
+                if (response.errno == "0") {
+                    location.reload();
+                } else {
+                    alert("注册失败");
+                }
+            }
+        })
     })
 });
 
@@ -189,6 +206,48 @@ function sendSMSCode() {
     }
 
     // TODO 发送短信验证码
+    var params = {
+        "mobile": mobile,
+        "image_code": imageCode,
+        "image_code_id": imageCodeId
+    };
+    $.ajax({
+        url: "/passport/sms_code",
+        type: "post",
+        data: JSON.stringify(params),
+        contentType: "application/json",
+        success: function (response) {
+            if (response.errno == '0') {
+                // 发送成功后，进行倒计时
+                var num = 60;
+                var t = setInterval(function ()  {
+                    if (num == 1) {
+                        // 倒计时完成,清除定时器
+                        clearInterval(t);         // 重新生成验证码
+                        generateImageCode();
+                        // 重置内容
+                        $(".get_code").html('点击获取验证码');
+                        // 重新添加点击事件
+                        $(".get_code").attr("onclick", "sendSMSCode();");
+                    } else {
+                        // 正在倒计时，显示秒数
+                        $(".get_code").html(num + '秒');
+                    }
+                    // 每一秒减一
+                    num -= 1;
+                }, 1000);
+            } else {
+                alert(response.errmsg);
+                // 重新生成验证码
+                generateImageCode();
+                // 重新添加点击事件
+                $(".get_code").attr("onclick", "sendSMSCode();");
+            }
+        }
+    })
+
+
+
 }
 
 // 调用该函数模拟点击左侧按钮
