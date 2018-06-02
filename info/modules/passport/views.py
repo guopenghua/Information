@@ -7,6 +7,53 @@ from info.lib.yuntongxun.sms import CCP
 from info.models import User
 import datetime
 
+@passport_blue.route("/logout")
+def logout():
+    """登出"""
+    try:
+        session.pop("user_id")
+        session.pop("nick_name")
+        session.pop("mobile")
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg="取消登录状态保持失败")
+    return jsonify(errno=response_code.RET.OK, errmsg="退出登录成功")
+
+
+@passport_blue.route("/login", methods=["POST"])
+def login():
+    """登录"""
+    # 1. 获取参数(手机号 密码)
+    mobile = request.json.get("mobile")
+    password = request.json.get("password")
+
+    # 2. 校验参数
+    if not all([mobile, password]):
+        return jsonify(errno=response_code.RET.DATAERR, errmsg="缺少参数")
+
+    if not re.match(r"^1[345678][0-9]{9}$", mobile):
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg="手机号格式有误")
+
+    try:
+        user = User.query.filter(User.mobile == mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg="查询用户数据失败")
+
+    if not user:
+        return jsonify(errno=response_code.RET.NODATA, errmsg="用户或密码输入有误")
+
+    if user.password_hash != password:
+        return jsonify(errno=response_code.RET.DATAERR, errmsg="用户或密码输入有误")
+
+    # 3. 状态保持
+    session["user_id"] = user.id
+    session["nick_name"] = user.nick_name
+    session["mobile"] = user.mobile
+
+    # 4. 响应
+    return jsonify(errno=response_code.RET.OK, errmsg="登录成功")
+
 @passport_blue.route("/register", methods=["POST"])
 def register():
     """注册"""
@@ -96,9 +143,10 @@ def sms_code():
         current_app.logger.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg="保存短信验证码失败")
 
-    result = CCP().send_template_sms(mobile, [sms_code, 5], 1)
-    if result != 0:
-        return jsonify(errno=response_code.RET.THIRDERR, errmsg="发送短信验证码失败")
+
+    # result = CCP().send_template_sms(mobile, [sms_code, 5], 1)
+    # if result != 0:
+    #     return jsonify(errno=response_code.RET.THIRDERR, errmsg="发送短信验证码失败")
 
     # 5. 响应
     return jsonify(errno=response_code.RET.OK, errmsg="发送短信验证码成功")

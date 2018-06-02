@@ -120,6 +120,25 @@ $(function(){
         }
 
         // 发起登录请求
+        var data = {
+            "mobile": mobile,
+            "password": password
+        };
+        $.ajax({
+            url: "/passport/login",
+            type: "post",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            success: function (response) {
+                if (response.errno == "0") {
+                    location.reload();
+                }else {
+                    alert("登录失败");
+                }
+            }
+        })
+
+
     });
 
 
@@ -174,6 +193,18 @@ $(function(){
         })
     })
 });
+
+function logout() {
+    $.get("/passport/logout", "get", function (response) {
+        if (response.errno== "0"){
+            location.reload();
+        }else {
+            alert("退出登录失败")
+        }
+    })
+
+}
+
 
 var imageCodeId = "";
 
