@@ -43,7 +43,7 @@ def login():
     if not user:
         return jsonify(errno=response_code.RET.NODATA, errmsg="用户或密码输入有误")
 
-    if user.password_hash != password:
+    if user.check_passowrd(password):
         return jsonify(errno=response_code.RET.DATAERR, errmsg="用户或密码输入有误")
 
     # 3. 状态保持
@@ -84,7 +84,7 @@ def register():
     # 3. 校验正确, 保存密码
     user = User()
     user.mobile = mobile
-    user.password_hash = password
+    user.password = password
     user.nick_name = mobile
     user.last_login = datetime.datetime.now()
 

@@ -129,14 +129,15 @@ $(function(){
             type: "post",
             data: JSON.stringify(data),
             contentType: "application/json",
+            headers: {"X-CSRFToken": getCookie("csrf_token")},
             success: function (response) {
                 if (response.errno == "0") {
                     location.reload();
                 }else {
-                    alert("登录失败");
+                    alert(response.errmsg);
                 }
             }
-        })
+        });
 
 
     });
@@ -183,6 +184,7 @@ $(function(){
             type: "post",
             data: JSON.stringify(data),
             contentType: "application/json",
+            headers: {"X-CSRFToken": getCookie("csrf_token")},
             success: function (response) {
                 if (response.errno == "0") {
                     location.reload();
@@ -247,6 +249,7 @@ function sendSMSCode() {
         type: "post",
         data: JSON.stringify(params),
         contentType: "application/json",
+        headers: {"X-CSRFToken": getCookie("csrf_token")},
         success: function (response) {
             if (response.errno == '0') {
                 // 发送成功后，进行倒计时
