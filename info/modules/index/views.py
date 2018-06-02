@@ -1,6 +1,8 @@
 from . import index_blue
 from flask import render_template, current_app, jsonify, session
-from info.models import User
+from info.models import User, News
+from info import constants
+
 
 @index_blue.route("/")
 def index():
@@ -14,8 +16,18 @@ def index():
         except Exception as e:
             current_app.logger.error(e)
 
+    # 2. 点击排行
+    news_clicks = []
+    try:
+        news_clicks = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS)
+    except Exception as e:
+        current_app.logger.error(e)
+
+
+
     context = {
-        "user": user
+        "user": user,
+        "news_clicks": news_clicks
     }
 
     return render_template("news/index.html", context=context)
