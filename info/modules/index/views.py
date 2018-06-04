@@ -2,6 +2,7 @@ from . import index_blue
 from flask import render_template, current_app, request, session, jsonify, make_response
 from info.models import User, News
 from info import constants, response_code
+from info.utils.comment import user_login_data
 
 
 @index_blue.route("/news_list")
@@ -42,16 +43,11 @@ def index_news_list():
     return jsonify(errno=response_code.RET.OK, errmsg="OK", context=context)
 
 @index_blue.route("/")
+@user_login_data
 def index():
     """主页"""
     # 1. 右上角用户登录状态
-    user_id = session.get("user_id", None)
-    user = None
-    if user_id:
-        try:
-            user = User.query.get(user_id)
-        except Exception as e:
-            current_app.logger.error(e)
+    user = g.user
 
     # 2. 点击排行
     news_clicks = []

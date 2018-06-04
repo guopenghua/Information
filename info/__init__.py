@@ -64,6 +64,9 @@ def create_app(config_name):
     from info.modules.passport import passport_blue
     app.register_blueprint(passport_blue)
 
+    from info.modules.news import news_blue
+    app.register_blueprint(news_blue)
+
     # 自定义过滤器
     from info.utils.comment import do_rank
     app.add_template_filter(do_rank, "rank")
