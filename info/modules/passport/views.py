@@ -43,10 +43,18 @@ def login():
     if not user:
         return jsonify(errno=response_code.RET.NODATA, errmsg="用户或密码输入有误")
 
-    if user.check_passowrd(password):
+    if  not user.check_passowrd(password):
         return jsonify(errno=response_code.RET.DATAERR, errmsg="用户或密码输入有误")
 
     # 3. 状态保持
+    user.last_login = datetime.datetime.now()
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.roolback()
+        return jsonify(errno=response_code.RET.DBERR, errmsg="刷新登陆时间失败")
+
     session["user_id"] = user.id
     session["nick_name"] = user.nick_name
     session["mobile"] = user.mobile
