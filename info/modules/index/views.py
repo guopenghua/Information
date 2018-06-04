@@ -1,5 +1,5 @@
 from . import index_blue
-from flask import render_template, current_app, request, session, jsonify, make_response
+from flask import render_template, current_app, request,jsonify, g
 from info.models import User, News
 from info import constants, response_code
 from info.utils.comment import user_login_data
