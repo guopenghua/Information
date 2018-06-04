@@ -44,9 +44,17 @@ $(function () {
 
         if ((canScrollHeight - nowScroll) < 100) {
             // TODO 判断页数，去更新新闻数据
+            if (!data_querying){
+                data_querying = true;
+                if (cur_page < total_page) {
+                    updateNewsData();
+                }else {
+                    data_querying = false;
+                }
+            }
         }
     })
-})
+});
 
 function updateNewsData() {
     // TODO 更新新闻数据
@@ -55,8 +63,13 @@ function updateNewsData() {
         "page": cur_page
     };
     $.get("/news_list", params, function (response) {
-        if (response.errno == "0"){
-            $(".list_con").html("");
+        data_querying = false;
+        if (response.errno == 0){
+            total_page = response.context.total_page;
+            if (cur_page==1) {
+                $(".list_con").html("");
+            }
+            cur_page += 1;
             for (var i=0; i<response.context.news_dict_list.length; i++ ) {
                 var news = response.context.news_dict_list[i];
                 var content = "<li>";
